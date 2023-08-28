@@ -1,65 +1,104 @@
-import React from "react";
+import React from 'react'
 
 const Mint = () => {
-  return (
-    <div>
-      <form action="" className="flex flex-col justify-start items-center">
-        {/* <div className=''>
-            <label htmlFor="">Name</label>
-        <input type="text" className='border-2 border-black' />
-        </div>
-        <div>
-            <label htmlFor="">Price</label>
-        <input type="text" className='border-2 border-black'  />
-        </div>
-        <div>
-            <label htmlFor="">External Links</label>
-        <input type="text" className='border-2 border-black'  />
-        </div>
-        <div>
-            <label htmlFor="">Image</label>
-        <input type="file" className=''  />
-        </div> */}
-        <div className="flex justify-center items-center mt-12 space-x-20">
-          <div className="flex-col justify-center items-center space-y-4 ">
-            <div>
-              <input
-                type="text"
-                placeholder="Name"
-                className="px-3 text-black  font-bold pr-16 border-2  m-1 p-1"
-              />
-            </div>
-            <div>
-              <input
-                type="price"
-                placeholder="Price"
-                className="px-3 text-black  font-bold pr-16  border-2 m-1 p-1"
-              />
-            </div>
-            <div>
-              <input
-                type="links"
-                placeholder="External Links"
-                className="px-3 text-black  font-bold pr-16  border-2 m-1 p-1"
-              />
-            </div>
-            <div>
-              <input
-                type="file"
-                placeholder="Image"
-                className="p-1 text-black  font-bold pr-16   "
-              />
-            </div>
-            <div>
-              <button className="border-2 rounded-md border-black bg-green-600 p-1 px-3 font-bold text-white mx-0.5">
-                SUBMIT
-              </button>
-            </div>
-          </div>
-        </div>
-      </form>
-    </div>
-  );
-};
+    // * STATES
+    const [formObj, setFormObj] = React.useState({name: '', description: '', price: '', externalLink: '', image: ''});
 
-export default Mint;
+    const [loading, setLoading] = React.useState(false);
+
+    let API_KEY = '52ef3948677443f1acce';
+    let API_SECRET = '4a7fbb05018163761615dcf630a964cd60aca2f61429ebfe70147b782f3b3d43';
+
+    const onChangeHandler = (e) => {
+        setFormObj({...formObj, [e.target.name]: e.target.value})
+    };
+
+    const onSubmitHandler = (e) => {
+        e.preventDefault();
+        
+        // ! pushing data to pinata
+        let data = {
+            name: formObj.name,
+            description: formObj.description,
+            external_url: formObj.externalLink,
+            image: 'nft.png'
+        }
+
+        const url = 'https://api.pinata.cloud/pinning/pinJSONToIPFS';
+
+        let body = JSON.stringify(data);
+
+        setLoading(true);
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'pinata_api_key': API_KEY,
+              'pinata_secret_api_key': API_SECRET
+            },
+            body
+          })
+          .then(res => res.json())
+          .then(result => console.log(result))
+          .catch(err => console.log(err));
+        // fetch('https://api.pinata.cloud/pinning/pinFileToIPFS', {
+        //     method: 'POST',
+        //     headers: {
+        //         'Content-Type': 'application/json',
+        //         'pinata_api_key': API_KEY,
+        //         'pinata_secret_api_key': API_SECRET
+        //     },
+        //     body
+        // })
+        // .then((res) => {
+        //     return res.json();
+        // }
+        // )
+        // .then((data) => {
+        //     setLoading(false);
+        //     console.log(data);
+        // }
+        // )
+        // .catch((err) => {
+        //     setLoading(false);
+        //     console.log(err);
+        // }
+        // )
+    };
+  return (
+    <div className='w-full h-screen flex justify-center items-center'>
+        <form onSubmit={onSubmitHandler}  className='flex justify-center items-center flex-col bg-slate-300 w-80'>
+            <div className='my-2'>
+                <label htmlFor=''>Name</label>
+                <input type='text' name="name" value={formObj.name} onChange={onChangeHandler} />
+            </div>
+            <div className='my-2'>
+                <label htmlFor=''>Description</label>
+                <input type='text' name="description" value={formObj.description} onChange={onChangeHandler}/>
+            </div>
+            <div className='my-2'>
+                <label htmlFor=''>Price</label>
+                <input type='text'name="price" value={formObj.price} onChange={onChangeHandler} />
+            </div>
+            <div className='my-2'>
+                <label htmlFor=''>External Links</label>
+                <input type='text' name="externalLink" value={formObj.externalLink} onChange={onChangeHandler}/>
+            </div>
+            <div>
+                <label htmlFor=''>Image</label>
+                <input type='file' name="image" value={formObj.image} onChange={onChangeHandler}/>
+            </div>
+            <div className='my-2 w-full'>
+                <button className='bg-red-500 w-full'>
+                    {
+                        loading ? 'Loading...' : 'Mint'
+                    }
+                </button>
+            </div>
+        </form>
+    </div>
+  )
+}
+
+export default Mint
