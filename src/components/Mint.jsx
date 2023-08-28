@@ -6,8 +6,8 @@ const Mint = () => {
 
     const [loading, setLoading] = React.useState(false);
 
-    let API_KEY = '52ef3948677443f1acce';
-    let API_SECRET = '4a7fbb05018163761615dcf630a964cd60aca2f61429ebfe70147b782f3b3d43';
+    let API_KEY = process.env.API_KEY;
+    let API_SECRET = process.env.API_SECRET;
 
     const onChangeHandler = (e) => {
         setFormObj({...formObj, [e.target.name]: e.target.value})
